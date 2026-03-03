@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>FridgeChef - Recipe Results</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ff6b6b",
+                        "primary-dark": "#e85a5a",
+                        "background-light": "#ffffff",
+                        "background-dark": "#1a1a1a",
+                        "surface-light": "#f8f9fa",
+                        "surface-dark": "#262626",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'hover': '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .icon-filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#1d0c0c] dark:text-[#fcf8f8] font-display antialiased min-h-screen flex flex-col transition-colors duration-300">
+    
+    <header class="sticky top-0 z-50 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-gray-100 dark:border-neutral-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20 gap-4">
+                <a href="index.html" class="flex items-center gap-3 shrink-0 group">
+                    <div class="size-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors">
+                        <span class="material-symbols-outlined icon-filled text-2xl">kitchen</span>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white hidden sm:block">FridgeChef</span>
+                </a>
+                
+                <div class="flex-1 max-w-2xl px-4 hidden md:block">
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-gray-400 group-focus-within:text-primary transition-colors">search</span>
+                        </div>
+                        <input id="nav-search-input" class="block w-full pl-11 pr-4 py-3 bg-surface-light dark:bg-surface-dark border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-black focus:ring-4 focus:ring-primary/10 rounded-xl text-sm transition-all duration-200 placeholder-gray-400 dark:text-white" placeholder="Add more ingredients..." type="text"/>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 shrink-0">
+                    <a class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-surface-light dark:hover:bg-surface-dark transition-colors" href="login.html">Log In</a>
+                    <a class="px-5 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 active:translate-y-0" href="signup.html">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-10">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6">
+                <div>
+                    <h1 id="results-title" class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white tracking-tight mb-2">
+                        Recipes for your ingredients
+                    </h1>
+                    <p class="text-gray-500 dark:text-gray-400 text-lg">We found these matches based on what you have.</p>
+                </div>
+            </div>
+            
+            </div>
+
+        <div id="recipes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="col-span-full py-20 flex flex-col items-center justify-center text-gray-400 animate-pulse">
+                <span class="material-symbols-outlined text-6xl mb-4">skillet</span>
+                <p class="text-xl font-bold">Firing up the stove...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const ingredients = params.get('ingredients');
+            
+            // 1. Update UI Text
+            if (ingredients) {
+                const searchInput = document.getElementById('nav-search-input');
+                if(searchInput) searchInput.value = decodeURIComponent(ingredients);
+                
+                const titleElement = document.getElementById('results-title');
+                if(titleElement) {
+                    titleElement.innerHTML = `Found <span class="text-primary">recipes</span> for "${decodeURIComponent(ingredients)}"`;
+                }
+            }
+
+            const container = document.getElementById('recipes-container');
+            if (!container) return;
+
+            try {
+                // 2. Fetch from Backend
+                const response = await fetch(`/api/search?ingredients=${encodeURIComponent(ingredients || '')}`);
+                const recipes = await response.json();
+
+                if (!recipes || recipes.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-3 flex flex-col items-center justify-center py-20 text-center">
+                            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6 text-gray-400">
+                                <span class="material-symbols-outlined text-4xl">search_off</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">No recipes found</h3>
+                            <p class="text-gray-500">Try searching for different ingredients (e.g., "chicken, rice").</p>
+                        </div>`;
+                    return;
+                }
+
+                // 3. Render Polished Cards
+                container.innerHTML = recipes.map(recipe => {
+                    // Logic for the badge (Spoonacular vs MealDB)
+                    let badgeHTML = '';
+
+                    if (recipe.missingCount !== undefined && recipe.missingCount !== null) {
+                        // Spoonacular Logic
+                        if (recipe.missingCount === 0) {
+                            badgeHTML = `
+                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold uppercase tracking-wide mb-5">
+                                <span class="material-symbols-outlined text-sm icon-filled">check_circle</span>
+                                You have everything
+                            </div>`;
+                        } else {
+                            badgeHTML = `
+                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-xs font-bold uppercase tracking-wide mb-5">
+                                <span class="material-symbols-outlined text-sm icon-filled">shopping_cart</span>
+                                Missing: ${recipe.missingCount} ingredients
+                            </div>`;
+                        }
+                    } else {
+                        // TheMealDB Logic (Unknown missing count)
+                        badgeHTML = `
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-bold uppercase tracking-wide mb-5">
+                            <span class="material-symbols-outlined text-sm icon-filled">visibility</span>
+                            View Ingredients
+                        </div>`;
+                    }
+
+                    return `
+                    <div class="group relative flex flex-col bg-white dark:bg-surface-dark rounded-2xl overflow-hidden border border-gray-100 dark:border-neutral-800 shadow-soft hover:shadow-hover transition-all duration-300 hover:-translate-y-1">
+                        <div class="relative h-64 overflow-hidden">
+                            <img src="${recipe.image}" alt="${recipe.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" onerror="this.src='https://placehold.co/600x400?text=No+Image'"/>
+                            
+                            <div class="absolute top-4 right-4 bg-white/90 dark:bg-black/80 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                                <span class="material-symbols-outlined text-amber-500 text-sm icon-filled">star</span>
+                                <span class="text-xs font-bold">4.5</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col flex-1 p-6">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold text-neutral-900 dark:text-white leading-tight group-hover:text-primary transition-colors line-clamp-2">${recipe.title}</h3>
+                            </div>
+                            
+                            <div class="flex items-center gap-4 text-gray-500 dark:text-gray-400 text-sm mb-4">
+                                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">schedule</span> 30 min</span>
+                                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">local_fire_department</span> 400 kcal</span>
+                            </div>
+
+                            <div class="mt-auto">
+                                ${badgeHTML}
+                                
+                                <a href="recipe_page.html?id=${recipe.id}" class="w-full h-12 flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-xl font-bold text-sm hover:bg-primary dark:hover:bg-primary dark:hover:text-white transition-colors group-hover/btn:gap-3">
+                                    View Instructions
+                                    <span class="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">arrow_forward</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error("Error:", error);
+                container.innerHTML = `
+                    <div class="col-span-3 text-center py-10">
+                        <p class="text-red-500 font-bold mb-2">Oops! Something went wrong.</p>
+                        <p class="text-gray-500">Please make sure the server is running (node server.js).</p>
+                    </div>`;
+            }
+        });
+
+        // Search Bar Listener
+        const navSearch = document.getElementById('nav-search-input');
+        if(navSearch) {
+            navSearch.addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') {
+                    window.location.href = `recipe_list.html?ingredients=${encodeURIComponent(e.target.value)}`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

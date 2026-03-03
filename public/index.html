@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>FridgeChef - Ingredient Based Recipe Finder</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ff6b6b",
+                        "primary-hover": "#ff5252",
+                        "background-light": "#ffffff",
+                        "background-dark": "#1a1a1a",
+                        "text-main": "#1a1a1a",
+                    },
+                    fontFamily: { "display": ["Plus Jakarta Sans", "sans-serif"] },
+                    boxShadow: { 'soft': '0 10px 40px -10px rgba(0, 0, 0, 0.08)' }
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: "Plus Jakarta Sans", sans-serif; }
+        html { scroll-behavior: smooth; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-float-delayed { animation: float 7s ease-in-out infinite 2s; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main antialiased min-h-screen flex flex-col overflow-x-hidden">
+    
+    <header class="sticky top-0 z-50 w-full bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <a href="index.html" class="flex items-center gap-3 cursor-pointer group">
+                    <div class="bg-primary/10 p-2 rounded-xl group-hover:bg-primary/20 transition-colors">
+                        <span class="material-symbols-outlined text-primary text-3xl">kitchen</span>
+                    </div>
+                    <span class="font-display font-bold text-xl tracking-tight text-gray-900 dark:text-white">FridgeChef</span>
+                </a>
+
+                <nav class="hidden md:flex items-center gap-8">
+                    <a class="text-sm font-semibold text-gray-600 hover:text-primary transition-colors" href="index.html">Home</a>
+                    <a class="text-sm font-semibold text-gray-600 hover:text-primary transition-colors" href="#trending">Trending</a>
+                    <a class="text-sm font-semibold text-gray-600 hover:text-primary transition-colors" href="about.html">About Us</a>
+                </nav>
+
+                <div class="hidden md:flex items-center gap-4">
+                    <a class="text-sm font-bold text-gray-900 hover:text-primary" href="login.html">Login</a>
+                    <a class="bg-gray-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-primary transition-colors shadow-lg shadow-gray-200" href="profile.html">My Profile</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col justify-center relative">
+        <div class="absolute top-20 left-10 w-64 h-64 bg-yellow-100/50 rounded-full blur-3xl -z-10 opacity-60 animate-float"></div>
+        <div class="absolute bottom-40 right-10 w-80 h-80 bg-green-100/50 rounded-full blur-3xl -z-10 opacity-60 animate-float-delayed"></div>
+        
+        <section class="w-full px-4 pt-16 pb-12 lg:pt-24 lg:pb-20 relative z-10">
+            <div class="max-w-4xl mx-auto text-center space-y-8">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-50 text-primary text-sm font-bold border border-orange-100">
+                    <span class="material-symbols-outlined text-lg">restaurant_menu</span>
+                    Over 20,000+ recipes available
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 leading-[1.1]">
+                    Don't know what to cook? <br/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">Tell us what you have.</span>
+                </h1>
+                
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed font-medium">
+                    Turn your leftover groceries into a gourmet meal in seconds. No waste, just taste.
+                </p>
+
+                <div class="max-w-3xl mx-auto mt-8 transform transition-all hover:-translate-y-1 duration-300">
+                    <div class="bg-white p-2 sm:p-3 rounded-[2rem] shadow-soft border border-gray-100 flex flex-col sm:flex-row items-center gap-2 relative z-20">
+                        <div class="hidden sm:flex items-center justify-center w-14 h-full text-gray-400">
+                            <span class="material-symbols-outlined text-3xl">search</span>
+                        </div>
+                        <input id="hero-search" class="w-full h-14 bg-transparent border-none text-gray-900 text-lg focus:ring-0 px-4" placeholder="Enter ingredients (e.g., eggs, tomato, chicken)..." type="text"/>
+                        <button onclick="searchRecipes()" class="w-full sm:w-auto h-14 px-8 bg-primary hover:bg-primary-hover text-white rounded-[1.5rem] font-bold text-lg shadow-lg flex items-center justify-center gap-2 group whitespace-nowrap">
+                            Find Recipes
+                            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center gap-4 mt-8">
+                    <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Popular Ingredients:</p>
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <button onclick="addTag('Eggs')" class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl hover:border-primary hover:bg-orange-50 transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-primary">egg</span> <span class="font-medium">Eggs</span>
+                        </button>
+                        <button onclick="addTag('Avocado')" class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl hover:border-primary hover:bg-orange-50 transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-primary">nutrition</span> <span class="font-medium">Avocado</span>
+                        </button>
+                        <button onclick="addTag('Chicken')" class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl hover:border-primary hover:bg-orange-50 transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-primary">set_meal</span> <span class="font-medium">Chicken</span>
+                        </button>
+                         <button onclick="addTag('Pasta')" class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl hover:border-primary hover:bg-orange-50 transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-primary">ramen_dining</span> <span class="font-medium">Pasta</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 bg-white border-t border-b border-gray-50">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900">How FridgeChef Works</h2>
+                    <p class="text-gray-500 mt-2">Three simple steps to your next meal.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="flex flex-col items-center text-center p-6">
+                        <div class="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mb-6 text-primary">
+                            <span class="material-symbols-outlined text-4xl">kitchen</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">1. Check your Fridge</h3>
+                        <p class="text-gray-500">See what ingredients you have left over. Don't let them go to waste!</p>
+                    </div>
+                    <div class="flex flex-col items-center text-center p-6">
+                        <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6 text-primary">
+                            <span class="material-symbols-outlined text-4xl">search</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">2. Search</h3>
+                        <p class="text-gray-500">Enter your ingredients into our smart search engine to find matching recipes.</p>
+                    </div>
+                    <div class="flex flex-col items-center text-center p-6">
+                        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6 text-primary">
+                            <span class="material-symbols-outlined text-4xl">skillet</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">3. Cook & Enjoy</h3>
+                        <p class="text-gray-500">Follow the simple instructions and enjoy a gourmet meal at home.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="trending" class="py-16 bg-gray-50 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900">Trending Now</h2>
+                        <p class="text-gray-500 mt-1">What other chefs are cooking this week.</p>
+                    </div>
+                    <a href="#" class="text-primary font-bold hover:underline">View All</a>
+                </div>
+                
+                <div class="flex gap-6 overflow-x-auto no-scrollbar pb-4 snap-x snap-mandatory">
+                    <div class="min-w-[300px] md:min-w-[350px] bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden snap-center">
+                        <img src="https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&q=80&w=400" class="w-full h-48 object-cover">
+                        <div class="p-5">
+                            <h3 class="font-bold text-lg mb-1">Spicy Shakshuka</h3>
+                            <div class="flex items-center text-yellow-500 text-sm mb-3">
+                                <span class="material-symbols-outlined text-base">star</span> 4.9 (120 reviews)
+                            </div>
+                            <button onclick="window.location.href='recipe_list.html?ingredients=eggs,tomato'" class="w-full py-2 border border-gray-200 rounded-lg text-sm font-bold hover:bg-gray-50">Find Similar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white border-t border-gray-100 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-2xl">kitchen</span>
+                    <span class="font-bold text-xl">FridgeChef</span>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-8">
+                    <a class="text-gray-600 hover:text-primary text-sm font-medium transition-colors" href="index.html">Home</a>
+                    <a class="text-gray-600 hover:text-primary text-sm font-medium transition-colors" href="about.html">About Us</a>
+                    <a class="text-gray-600 hover:text-primary text-sm font-medium transition-colors" href="about.html#contact">Contact</a>
+                </div>
+
+                <p class="text-gray-400 text-sm">© 2023 FridgeChef. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function searchRecipes() {
+            const input = document.getElementById('hero-search');
+            const query = input.value.trim();
+            if (query) {
+                window.location.href = `recipe_list.html?ingredients=${encodeURIComponent(query)}`;
+            } else {
+                input.focus();
+            }
+        }
+
+        function addTag(ingredient) {
+            const input = document.getElementById('hero-search');
+            const currentVal = input.value.trim();
+            if (currentVal.length > 0) {
+                input.value = currentVal + ", " + ingredient;
+            } else {
+                input.value = ingredient;
+            }
+            input.focus();
+        }
+
+        document.getElementById('hero-search').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchRecipes();
+        });
+    </script>
+</body>
+</html>
